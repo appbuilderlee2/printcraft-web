@@ -1,0 +1,75 @@
+name: Build and deploy PrintCraft Web
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+  schedule:
+    - cron: "23 4 * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout deployment repository
+        uses: actions/checkout@v4
+
+      - name: Checkout upstream PrintCraft
+        uses: actions/checkout@v4
+        with:
+          repository: storytold/printcraft
+          ref: main
+          path: upstream
+          persist-credentials: false
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+
+      - name: Cache Rust build
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: upstream
+
+      - name: Install Trunk
+        env:
+          TRUNK_VERSION: "0.21.14"
+        run: |
+          curl -fsSL "https://github.com/trunk-rs/trunk/releases/download/v${TRUNK_VERSION}/trunk-x86_64-unknown-linux-gnu.tar.gz" \
+            | tar -xz -C "$HOME/.cargo/bin" trunk
+          trunk --version
+
+      - name: Build PrintCraft Web
+        working-directory: upstream/apps/printcraft-web
+        run: trunk build --release
+
+      - name: Prepare GitHub Pages site
+        run: |
+          rm -rf site
+          mkdir -p site
+          cp -R upstream/dist/web/. site/
+          touch site/.nojekyll
+
+      - name: Publish to gh-pages
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          cd site
+          git init
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Deploy PrintCraft Web from upstream $(git -C ../upstream rev-parse --short HEAD)"
+          git branch -M gh-pages
+          git remote add origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git push --force origin gh-pages
