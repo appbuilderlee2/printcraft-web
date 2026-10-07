@@ -8,14 +8,16 @@ on:
     - cron: "23 4 * * *"
 
 permissions:
-  contents: write
+  contents: read
+  pages: write
+  id-token: write
 
 concurrency:
   group: "pages"
   cancel-in-progress: false
 
 jobs:
-  build-deploy:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -52,24 +54,22 @@ jobs:
         working-directory: upstream/apps/printcraft-web
         run: trunk build --release
 
-      - name: Prepare GitHub Pages site
-        run: |
-          rm -rf site
-          mkdir -p site
-          cp -R upstream/dist/web/. site/
-          touch site/.nojekyll
+      - name: Prepare Pages artifact
+        run: touch upstream/dist/web/.nojekyll
 
-      - name: Publish to gh-pages
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          cd site
-          git init
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          git commit -m "Deploy PrintCraft Web from upstream $(git -C ../upstream rev-parse --short HEAD)"
-          git branch -M gh-pages
-          git remote add origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-          git push --force origin gh-pages
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: upstream/dist/web
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
