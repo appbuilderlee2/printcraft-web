@@ -54,6 +54,9 @@ jobs:
         working-directory: upstream/apps/printcraft-web
         run: trunk build --release
 
+      - name: Add PWA shell and offline cache
+        run: python3 scripts/make-pwa.py
+
       - name: Prepare Pages artifact
         run: touch upstream/dist/web/.nojekyll
 
