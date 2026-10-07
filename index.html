@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PrintCraft</title>
+    
+<script type="module">
+import init, * as bindings from './printcraft-web-33dd2e095e36a779.js';
+const wasm = await init({ module_or_path: './printcraft-web-33dd2e095e36a779_bg.wasm' });
+
+
+window.wasmBindings = bindings;
+
+
+dispatchEvent(new CustomEvent("TrunkApplicationStarted", {detail: {wasm}}));
+
+</script>
+    <style>
+      html, body { margin: 0; height: 100%; overflow: hidden; background: #f1f1f3; }
+      canvas { width: 100%; height: 100%; display: block; outline: none; }
+      @media (prefers-color-scheme: dark) { html, body { background: #19191c; } }
+    </style>
+  <link rel="modulepreload" href="./printcraft-web-33dd2e095e36a779.js" crossorigin="anonymous" integrity="sha384-1BjezioPrYQu+Vew02CYrQhCFpc7c/q95nZLqB5H13sdkD7VO4T6VQFdVLLAnSLm"><link rel="preload" href="./printcraft-web-33dd2e095e36a779_bg.wasm" crossorigin="anonymous" integrity="sha384-ch/9MCLNIC6pEz5QlEce7WtbeCUabvx3naVXEowi2frhA6hm5cNx8L5M9rdN5sCO" as="fetch" type="application/wasm"></head>
+  <body>
+    <canvas id="printcraft"></canvas>
+  </body>
+</html>
