@@ -95,9 +95,29 @@ icon = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
 </svg>
 """
 (site / "pwa-icon.svg").write_text(icon, encoding="utf-8")
+write_png(site / "favicon-16x16.png", 16)
+write_png(site / "favicon-32x32.png", 32)
 write_png(site / "icon-192.png", 192)
 write_png(site / "icon-512.png", 512)
 write_png(site / "apple-touch-icon.png", 180)
+
+def write_ico(path: Path, png_paths):
+    images = [p.read_bytes() for p in png_paths]
+    header = struct.pack("<HHH", 0, 1, len(images))
+    entries = []
+    offset = 6 + 16 * len(images)
+    for p, data in zip(png_paths, images):
+        size = int(p.stem.split("-")[1].split("x")[0])
+        width = 0 if size >= 256 else size
+        height = 0 if size >= 256 else size
+        entries.append(struct.pack("<BBBBHHII", width, height, 0, 0, 1, 32, len(data), offset))
+        offset += len(data)
+    path.write_bytes(header + b"".join(entries) + b"".join(images))
+
+write_ico(site / "favicon.ico", [
+    site / "favicon-16x16.png",
+    site / "favicon-32x32.png",
+])
 
 html = index.read_text(encoding="utf-8")
 head_bits = """
@@ -107,6 +127,9 @@ head_bits = """
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="PrintCraft">
 <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
+<link rel="icon" href="./favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="./favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="./favicon-16x16.png">
 <link rel="icon" sizes="192x192" href="./icon-192.png" type="image/png">
 <link rel="icon" sizes="512x512" href="./icon-512.png" type="image/png">
 <link rel="icon" href="./pwa-icon.svg" type="image/svg+xml">
@@ -188,4 +211,4 @@ self.addEventListener("fetch", event => {{
 }});
 """
 (site / "sw.js").write_text(sw, encoding="utf-8")
-print(f"PWA prepared with cache {version}, PNG icons, and {len(precache)} precached files")
+print(f"PWA prepared with cache {version}, favicon + PWA icons, and {len(precache)} precached files")
