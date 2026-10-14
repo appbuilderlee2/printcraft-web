@@ -1,4 +1,4 @@
-name: Build and deploy PrintCraft Web
+name: Build and deploy PdfCraft Web
 
 on:
   push:
@@ -24,11 +24,11 @@ jobs:
       - name: Checkout deployment repository
         uses: actions/checkout@v4
 
-      - name: Checkout upstream PrintCraft
+      - name: Checkout upstream PdfCraft v0.7.1
         uses: actions/checkout@v4
         with:
-          repository: storytold/printcraft
-          ref: main
+          repository: storytold/pdfcraft
+          ref: v0.7.1
           path: upstream
           persist-credentials: false
 
@@ -50,8 +50,8 @@ jobs:
             | tar -xz -C "$HOME/.cargo/bin" trunk
           trunk --version
 
-      - name: Build PrintCraft Web
-        working-directory: upstream/apps/printcraft-web
+      - name: Build PdfCraft Web
+        working-directory: upstream/apps/pdfcraft-web
         run: trunk build --release
 
       - name: Add PWA shell and offline cache
