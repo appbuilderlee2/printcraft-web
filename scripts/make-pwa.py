@@ -67,8 +67,8 @@ def write_png(path: Path, size: int):
     path.write_bytes(png)
 
 manifest = {
-    "name": "PrintCraft Web",
-    "short_name": "PrintCraft",
+    "name": "PdfCraft Web",
+    "short_name": "PdfCraft",
     "description": "Local-first PDF workbench powered by WebAssembly.",
     "id": "./",
     "start_url": "./",
@@ -125,7 +125,7 @@ head_bits = """
 <meta name="theme-color" content="#111111">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="PrintCraft">
+<meta name="apple-mobile-web-app-title" content="PdfCraft">
 <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
 <link rel="icon" href="./favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32x32.png">
@@ -162,7 +162,7 @@ version_seed = "\n".join(
 )
 version = hashlib.sha256(version_seed.encode()).hexdigest()[:12]
 
-sw = f"""const CACHE = "printcraft-web-{version}";
+sw = f"""const CACHE = "pdfcraft-web-{version}";
 const PRECACHE = {json.dumps(precache, indent=2)};
 
 self.addEventListener("install", event => {{
@@ -173,7 +173,7 @@ self.addEventListener("install", event => {{
 self.addEventListener("activate", event => {{
   event.waitUntil(
     caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k.startsWith("printcraft-web-") && k !== CACHE).map(k => caches.delete(k)))
+      Promise.all(keys.filter(k => (k.startsWith("pdfcraft-web-") || k.startsWith("printcraft-web-")) && k !== CACHE).map(k => caches.delete(k)))
     ).then(() => self.clients.claim())
   );
 }});
