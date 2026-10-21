@@ -4,13 +4,13 @@ This repository builds the official open-source [PdfCraft](https://github.com/st
 
 Upstream source: https://github.com/storytold/pdfcraft
 
-Current pinned upstream release: **v0.7.1**
+Current pinned upstream release: **v0.10.1**
 
 The web build uses relative asset URLs, so it can run from the existing GitHub Pages project path:
 
 `https://appbuilderlee2.github.io/printcraft-web/`
 
-The repository name and Pages URL remain `printcraft-web` for compatibility with existing bookmarks and the installed PWA, while the app itself now builds PdfCraft v0.7.1.
+The repository name and Pages URL remain `printcraft-web` for compatibility with existing bookmarks and the installed PWA, while the app itself now builds PdfCraft v0.10.1.
 
 ## Licensing
 
