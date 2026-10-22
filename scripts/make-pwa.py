@@ -148,6 +148,12 @@ if ("serviceWorker" in navigator) {
 """
 if "serviceWorker.register" not in html:
     html = html.replace("</body>", register + "</body>")
+# Keep the official upstream UI intact while providing a visible translator entry.
+translator_link = """
+<a href="./translator/" aria-label="開啟 PDF 翻譯工具" style="position:fixed;right:16px;bottom:18px;z-index:10000;background:#155ac4;color:#fff;border-radius:24px;padding:11px 16px;box-shadow:0 2px 10px #0005;text-decoration:none;font:600 14px -apple-system,BlinkMacSystemFont,sans-serif">🌐 PDF 翻譯</a>
+"""
+if 'href="./translator/"' not in html:
+    html = html.replace("</body>", translator_link + "</body>")
 index.write_text(html, encoding="utf-8")
 
 precache = []
