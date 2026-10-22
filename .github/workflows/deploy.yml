@@ -54,6 +54,9 @@ jobs:
         working-directory: upstream/apps/pdfcraft-web
         run: trunk build --release
 
+      - name: Include PDF translation companion
+        run: mkdir -p upstream/dist/web/translator && cp translator/index.html upstream/dist/web/translator/index.html
+
       - name: Add PWA shell and offline cache
         run: python3 scripts/make-pwa.py
 
